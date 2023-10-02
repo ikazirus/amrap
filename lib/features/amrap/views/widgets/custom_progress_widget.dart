@@ -12,8 +12,8 @@ class AmrapTimerWidget extends StatefulWidget {
 
   const AmrapTimerWidget({
     Key? key,
-    this.value = 0,
-    this.milliSeconds = 2500,
+    this.value = 100,
+    this.milliSeconds = 10000,
     this.width = 100,
     this.centerWidget,
     this.color = Colors.amber,
@@ -24,22 +24,13 @@ class AmrapTimerWidget extends StatefulWidget {
 }
 
 class _AmrapTimerWidgetState extends State<AmrapTimerWidget>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late AnimationController counterAnimationController;
   late Animation<double> counterAnimation;
-
-  late AnimationController initAnimationController;
-  late Animation<double> initAnimation;
 
   @override
   void initState() {
     super.initState();
-    initAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(
-        milliseconds: 2000,
-      ),
-    );
 
     counterAnimationController = AnimationController(
       vsync: this,
@@ -48,25 +39,18 @@ class _AmrapTimerWidgetState extends State<AmrapTimerWidget>
       ),
     );
 
-    initAnimation =
-        Tween<double>(begin: 0, end: 100).animate(initAnimationController)
-          ..addListener(() {
-            setState(() {});
-          });
-
     counterAnimation = Tween<double>(begin: 0, end: widget.value)
         .animate(counterAnimationController)
       ..addListener(() {
         setState(() {});
       });
 
-    initAnimationController.forward();
+    counterAnimationController.forward();
   }
 
   @override
   void dispose() {
     counterAnimationController.dispose();
-    initAnimationController.dispose();
     super.dispose();
   }
 
@@ -76,27 +60,20 @@ class _AmrapTimerWidgetState extends State<AmrapTimerWidget>
     final Size size = Size(widget.width, widget.width);
 
     return SizedBox(
-      height: size.height + 20,
+      height: size.height + 80,
       width: size.width + 20,
       child: Stack(
         alignment: Alignment.center,
+        clipBehavior: Clip.none,
         children: [
           Positioned(
               right: 4,
-              bottom: 4,
+              bottom: -10,
+              width: 80,
               child: RoundCounter(
                 onTap: () => counterAnimationController.forward(),
               )),
-          AnimatedPositioned(
-            duration: const Duration(
-              seconds: 1,
-            ),
-            curve: Curves.elasticIn,
-            left: initAnimation.isCompleted ? null : -(size.width),
-            width: widget.width / 2,
-            child: CounterCenterWidget(
-                size: Size(widget.width / 2, widget.width / 2)),
-          ),
+          CounterCenterWidget(size: Size(widget.width / 2, widget.width / 2)),
           CustomPaint(
             foregroundPainter: CircleProgressPainter(
               currentProgress: counterAnimation.value,

@@ -12,6 +12,7 @@ class AmrapViewModel extends ChangeNotifier {
   String? notes;
   AmrapState counterState = AmrapState.init;
   Duration counterCurrentDuration = Duration.zero;
+  int activeAmrapIndex = 0;
 
   addAmrap() {
     var amrap = AmrapModel(
@@ -30,6 +31,8 @@ class AmrapViewModel extends ChangeNotifier {
     reassignIndexes();
     notifyListeners();
   }
+
+  AmrapModel get activeAmrap => amraps[activeAmrapIndex];
 
   reassignIndexes() {
     if (amraps.length > 1) {
